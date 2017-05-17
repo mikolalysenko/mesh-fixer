@@ -29,4 +29,9 @@ Fills in holes in a given mesh.
     * `tolerance` the precision to which the mesh is to be repaired to
 
 # Credits
+
+Development supported by [Standard Cyborg](http://www.standardcyborg.com/)
+
+<img src="sc.png" width=150 />
+
 (c) 2017 Mikola Lysenko. MIT License
