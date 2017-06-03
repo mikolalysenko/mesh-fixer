@@ -1,13 +1,13 @@
-const regl = require('regl')()
+const regl = require('regl')({
+  extensions: 'OES_element_index_uint'
+})
 const camera = require('regl-camera')(regl, {})
 const calcNormals = require('angle-normals')
 const sc = require('simplicial-complex')
 const repairMesh = require('../mesh-fixer')
 const leg = require('./leg.json')
 
-const repaired = repairMesh(leg.cells, leg.positions, {
-  tolerance: 0.5
-})
+const repaired = repairMesh(leg.cells, leg.positions)
 
 function Mesh (cells, positions) {
   this.positions = regl.buffer(positions)

@@ -13,14 +13,12 @@ npm i mesh-fixer
 ```javascript
 const mesh = loadMyBrokenMesh()
 
-const repaired = require('mesh-fixer')(mesh.cells, mesh.positions, {
-  tolerance: 0.5
-})
+const repaired = require('mesh-fixer')(mesh.cells, mesh.positions)
 ```
 
 # API
 
-#### `require('mesh-fixer')(cells, positions, options)`
+#### `require('mesh-fixer')(cells, positions[, options])`
 Fills in holes in a given mesh.
 
 * `cells` are the faces of the mesh

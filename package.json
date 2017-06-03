@@ -6,9 +6,8 @@
   "dependencies": {
     "angle-normals": "^1.0.0",
     "gl-vec3": "^1.0.3",
-    "haar-3d": "^1.0.0",
-    "refine-mesh": "^1.0.1",
-    "taubin-smooth": "^1.0.1"
+    "haar-3d": "^1.0.1",
+    "refine-mesh": "^1.0.1"
   },
   "devDependencies": {
     "control-panel": "^1.2.0",

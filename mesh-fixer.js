@@ -2,30 +2,51 @@ var rasterize = require('haar-3d/rasterize-cells')
 var contour = require('haar-3d/contour')
 var calcNormals = require('angle-normals')
 var refine = require('refine-mesh')
-var smooth = require('taubin-smooth')
 
 var createGrid = require('./lib/mesh-grid')
 var projectVerts = require('./lib/project-verts')
 
-module.exports = function (cells, positions, options) {
-  var tolerance = options.tolerance
+function calcTolerance (cells, positions) {
+  var avgEdge = 0
 
-  var haar = rasterize(cells, positions, {
-    resolution: tolerance
-  })
+  for (var i = 0; i < cells.length; ++i) {
+    var c = cells[i]
+    for (var j = 0; j < 3; ++j) {
+      var a = positions[c[j]]
+      var b = positions[c[(j + 1) % 3]]
+      var d = Math.sqrt(
+        Math.pow(a[0] - b[0], 2) +
+        Math.pow(a[1] - b[1], 2) +
+        Math.pow(a[2] - b[2], 2))
 
-  var mesh = contour(haar)
+      avgEdge += d
+    }
+  }
 
-  var grid = createGrid(cells, positions, 2 * tolerance)
+  return 2 * avgEdge / (3 * cells.length)
+}
 
-  var normals = calcNormals(mesh.cells, mesh.positions)
-  mesh = refine(mesh.cells, mesh.positions, normals, {
+module.exports = function (cells, positions, _options) {
+  var options = _options || {}
+
+  var tolerance
+  if ('tolerance' in options) {
+    tolerance = options.tolerance
+  } else {
+    tolerance = calcTolerance(cells, positions)
+  }
+
+  var GRID_SIZE = 2 * tolerance
+
+  var mesh = contour(rasterize(cells, positions, {
+    resolution: 0.5 * tolerance
+  }))
+
+  var grid = createGrid(cells, positions, GRID_SIZE)
+
+  mesh.normals = calcNormals(mesh.cells, mesh.positions)
+  mesh = refine(mesh.cells, mesh.positions, mesh.normals, {
     edgeLength: 0.5 * tolerance
-  })
-
-  mesh.positions = smooth(mesh.cells, mesh.positions, {
-    passBand: 0.1,
-    iters: 50
   })
 
   projectVerts(
@@ -33,7 +54,7 @@ module.exports = function (cells, positions, options) {
     positions,
     mesh.positions,
     mesh.normals,
-    2 * tolerance)
+    GRID_SIZE)
 
   return mesh
 }
